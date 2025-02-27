@@ -141,6 +141,12 @@ def test_lembed():
         -0.09205757826566696, rel=1e-2
     )
 
+    with _raises("an error"):
+        db.execute(
+            "insert into temp.lembed_models(name, model) values (?, lembed_model_from_file(?))",
+            ["default", MODEL1_PATH],
+        )
+
 
 @pytest.mark.skip(reason="TODO")
 def test__lembed_api():

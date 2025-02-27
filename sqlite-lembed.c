@@ -400,7 +400,7 @@ static int lembed_modelsConnect(sqlite3 *db, void *pAux, int argc,
 #define LEMBED_MODELS_MODEL           1
 #define LEMBED_MODELS_MODEL_OPTIONS   2
 #define LEMBED_MODELS_CONTEXT_OPTIONS 3
-  rc = sqlite3_declare_vtab(db, "CREATE TABLE x(name, model, model_options "
+  rc = sqlite3_declare_vtab(db, "CREATE TABLE x(name text unique, model, model_options "
                                 "hidden, context_options hidden)");
   if (rc == SQLITE_OK) {
     pNew = sqlite3_malloc(sizeof(*pNew));
@@ -435,6 +435,9 @@ static int lembed_modelsUpdate(sqlite3_vtab *pVTab, int argc,
         (const char *)sqlite3_value_text(columnValues[LEMBED_MODELS_NAME]);
     int idx = -1;
     for (int i = 0; i < MAX_MODELS; i++) {
+      if (strcmp(p->api->models[i].name, key)) {
+        return SQLITE_CONSTRAINT;
+      }
       if (!p->api->models[i].name) {
         p->api->models[i].name = sqlite3_mprintf("%s", key);
         idx = i;
